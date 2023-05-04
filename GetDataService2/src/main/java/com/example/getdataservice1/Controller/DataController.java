@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/get-data2")
+@RequestMapping("/get-data")
 @RequiredArgsConstructor
 public class DataController {
 
@@ -30,5 +30,15 @@ public class DataController {
             token = authorizationHeaderValue.substring(7);
         }
         return ResponseEntity.ok().body(dataExampleService.getDataByToken(token));
+    }
+
+    @GetMapping("/get-data-by-id/{id}")
+    public ResponseEntity<DataExample> getDataById(HttpServletRequest request, @PathVariable String id) throws InterruptedException {
+        String token = null;
+        final String authorizationHeaderValue = request.getHeader("Authorization");
+        if (authorizationHeaderValue != null && authorizationHeaderValue.startsWith("Bearer")) {
+            token = authorizationHeaderValue.substring(7);
+        }
+        return ResponseEntity.ok().body(dataExampleService.getDataById(token, id));
     }
 }
