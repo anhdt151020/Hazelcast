@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/AuthService1" />
+        <option name="gradleJvm" value="azul-11" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/AuthService1" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/DiscoveryServer1" />
+        <option name="gradleJvm" value="azul-11" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/DiscoveryServer1" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/GatewayService1" />
+        <option name="gradleJvm" value="azul-11" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/GatewayService1" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/GetDataService1" />
+        <option name="gradleJvm" value="azul-11" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/GetDataService1" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/GetDataService2" />
+        <option name="gradleJvm" value="azul-11" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/GetDataService2" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
