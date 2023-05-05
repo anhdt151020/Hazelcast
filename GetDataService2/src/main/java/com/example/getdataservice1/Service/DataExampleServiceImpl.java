@@ -1,15 +1,18 @@
 package com.example.getdataservice1.Service;
 
 import com.example.getdataservice1.Entity.DataExample;
+import com.example.getdataservice1.Entity.DataTransferModel;
 import com.example.getdataservice1.Repository.DataExampleRepository;
+import com.example.getdataservice1.Repository.DataTransferModelRepository;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,14 +23,17 @@ import java.util.Objects;
 public class DataExampleServiceImpl implements DataExampleService{
 
     private final DataExampleRepository dataExampleRepository;
-    private final RedisTemplate<Object, Object> template;
+    private final DataTransferModelRepository dataTransferModelRepository;
     HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 
-    Map<String, Object> dataExampleMap = hazelcastInstance.getMap("example-map");
+    IMap<String, Object> authMap = hazelcastInstance.getMap("auth-map");
+    IMap<Long, Object> dataMap = hazelcastInstance.getMap("data-map");
+    IMap<Long, Object> transferMap = hazelcastInstance.getMap("transfer-map");
+
     @Override
     public DataExample saveNewRecord(DataExample dataExample) {
         DataExample record = dataExampleRepository.save(dataExample);
-        dataExampleMap.put(record.getId().toString(), record);
+        dataMap.put(Long.parseLong(record.getId().toString()), record);
         return record;
     }
 
@@ -36,7 +42,7 @@ public class DataExampleServiceImpl implements DataExampleService{
     public List<DataExample> getDataByToken(String token) throws InterruptedException {
         Thread.sleep(5000);
         List<DataExample> res;
-        Object value = template.opsForValue().get(token);
+        Object value = authMap.get(token);
         if (value == null){
             throw new RuntimeException("Token invalid");
         } else {
@@ -44,7 +50,7 @@ public class DataExampleServiceImpl implements DataExampleService{
             String username = value.toString();
             res = dataExampleRepository.findAllByUsername(username);
             res.forEach(o -> {
-                dataExampleMap.put(o.getId().toString(), o);
+                dataMap.put(Long.parseLong(o.getId().toString()), o);
             });
         }
         return res;
@@ -53,7 +59,7 @@ public class DataExampleServiceImpl implements DataExampleService{
     @Override
     public DataExample getDataById(String token, String id) throws InterruptedException {
         DataExample res;
-        Object value = template.opsForValue().get(token);
+        Object value = authMap.get(token);
         if (value == null) {
             throw new RuntimeException("Token invalid");
         } else {
@@ -68,7 +74,62 @@ public class DataExampleServiceImpl implements DataExampleService{
             return res;
         }
     }
+
+    @Override
+    public DataTransferModel getTransferData(HttpServletRequest request, Long id) {
+        String token = null;
+        final String authorizationHeaderValue = request.getHeader("Authorization");
+        if (authorizationHeaderValue != null && authorizationHeaderValue.startsWith("Bearer")) {
+            token = authorizationHeaderValue.substring(7);
+        }
+        assert token != null;
+        Object value = authMap.get(token);
+        if (value == null) {
+            throw new RuntimeException("Token invalid");
+        }
+        try {
+            DataTransferModel dataTransferModel = (DataTransferModel) transferMap.get(id);
+            return dataTransferModelRepository.save(dataTransferModel);
+        } catch (Exception e) {
+            DataExample data = (DataExample) dataMap.get(id);
+            DataTransferModel res = DataTransferModel.builder()
+                    .id(data.getId())
+                    .Data(data.getData())
+                    .authType(request.getAuthType())
+                    .method(request.getMethod())
+                    .requestURI(request.getRequestURI())
+                    .sessionId(request.getRequestedSessionId())
+                    .username(value.toString())
+                    .build();
+            transferMap.put(id, res);
+            return dataTransferModelRepository.save(res);
+        }
+    }
+
+    @Override
+    public DataTransferModel updateTransferData(DataTransferModel data, Long id) {
+        DataTransferModel res;
+        try {
+            res = (DataTransferModel) transferMap.get(id);
+            if (res != null) {
+                res = DataTransferModel.builder()
+                        .id(data.getId())
+                        .Data(data.getData())
+                        .authType(data.getAuthType())
+                        .method(data.getMethod())
+                        .requestURI(data.getRequestURI())
+                        .sessionId(data.getSessionId())
+                        .username(data.getUsername())
+                        .build();
+                transferMap.put(id, res);
+            }
+        } catch (NullPointerException e) {
+            return null;
+        }
+        return res;
+    }
+
     public DataExample getDataFromHazelcast(String id){
-        return (DataExample) dataExampleMap.get(id);
+        return (DataExample) dataMap.get(Long.parseLong(id));
     }
 }
