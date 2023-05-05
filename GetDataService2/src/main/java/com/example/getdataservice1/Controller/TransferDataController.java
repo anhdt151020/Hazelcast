@@ -3,10 +3,13 @@ package com.example.getdataservice1.Controller;
 import com.example.getdataservice1.Entity.TransferModel;
 import com.example.getdataservice1.Service.TransferDataService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
-@RequestMapping("/get-data/")
+@RequestMapping("/get-data2/")
 @RequiredArgsConstructor
 public class TransferDataController {
 
@@ -28,8 +31,8 @@ public class TransferDataController {
     }
 
     @GetMapping("/transfer2-get/{key}")
-    public TransferModel update(@PathVariable String key) throws InterruptedException {
-        return transferDataService.getData(key);
+    public ResponseEntity<PojoExample> update(HttpServletRequest request, @PathVariable String key) throws InterruptedException {
+        return ResponseEntity.ok(transferDataService.getData(request, key));
     }
 
     @PostMapping("transfer2-save/{key}")

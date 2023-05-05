@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/get-data")
+@RequestMapping("/get-data2")
 @RequiredArgsConstructor
 public class DataController {
 
