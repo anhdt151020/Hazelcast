@@ -20,6 +20,7 @@ public class TransferDataServiceImpl implements TransferDataService{
     HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 //    private final RedisTemplate<Object, Object> template;
     Map<String, Object> dataExampleMap = hazelcastInstance.getMap("data-map");
+    Map<String, Object> authData = hazelcastInstance.getMap("auth-map");
 
     @Override
     public TransferModel putNewData(TransferModel transferModel) {
@@ -54,7 +55,7 @@ public class TransferDataServiceImpl implements TransferDataService{
             token = authorizationHeaderValue.substring(7);
         }
         assert token != null;
-        Object value = dataExampleMap.get(token);
+        Object value = authData.get(token);
         if (value == null){
             throw new RuntimeException("Token invalid");
         } else {
