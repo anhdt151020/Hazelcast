@@ -14,7 +14,7 @@ public class EventListenerForFailedData {
     IMap<String, Object> dataExampleMap = hazelcastInstance.getMap("data-map");
 
     @EventListener
-    public void savingDataFailed(SavingFailedDataEvent savingFailedDataEvent){
+    public void savingFailedDataEvent(SavingFailedDataEvent savingFailedDataEvent){
 
     }
 }
