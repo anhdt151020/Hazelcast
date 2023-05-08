@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface DataExampleRepository extends JpaRepository<DataExample, Long> {
     List<DataExample> findAllByUsername(String username);
+    DataExample findByUsernameAndId(String username, Long id);
 }

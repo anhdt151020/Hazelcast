@@ -9,4 +9,6 @@ public interface DataExampleService {
     DataExample saveNewRecord(DataExample dataExample);
 
     List<DataExample> getDataByToken(String token) throws InterruptedException;
+
+    DataExample getDataById(String token, Long id) throws InterruptedException;
 }

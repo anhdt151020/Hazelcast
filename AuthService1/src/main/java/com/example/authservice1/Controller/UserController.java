@@ -7,9 +7,12 @@ import com.example.authservice1.Entity.Role;
 import com.example.authservice1.Entity.User;
 import com.example.authservice1.Service.JwtUserDetailsService;
 import com.example.authservice1.Service.UserService;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -29,7 +33,10 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtUserDetailsService userDetailsService;
-    private final RedisTemplate<Object, Object> template;
+//    private final RedisTemplate<Object, Object> template;
+    HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+    IMap<String, Object> myMap = hazelcastInstance.getMap("auth-map");
+
     public static final long JWT_TOKEN_VALIDITY = 15 * 60;
     @GetMapping("/getUser/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username){
@@ -71,8 +78,9 @@ public class UserController {
                 .loadUserByUsername(authenticationRequest.getUsername());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
-        template.opsForValue().set(token, userDetails.getUsername());
-        template.expire(token, JWT_TOKEN_VALIDITY * 1000, TimeUnit.MILLISECONDS);
+        myMap.put(token, userDetails.getUsername(), JWT_TOKEN_VALIDITY * 1000, TimeUnit.MILLISECONDS);
+//        template.opsForValue().set(token, userDetails.getUsername());
+//        template.expire(token, JWT_TOKEN_VALIDITY * 1000, TimeUnit.MILLISECONDS);
         return ResponseEntity.ok(new JwtResponse(token));
     }
 

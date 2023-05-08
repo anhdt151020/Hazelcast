@@ -31,4 +31,14 @@ public class DataController {
         }
         return ResponseEntity.ok().body(dataExampleService.getDataByToken(token));
     }
+
+    @GetMapping("/get-data/{id}")
+    public ResponseEntity<DataExample> getDataById(HttpServletRequest request, @PathVariable Long id) throws InterruptedException {
+        String token = null;
+        final String authorizationHeaderValue = request.getHeader("Authorization");
+        if (authorizationHeaderValue != null && authorizationHeaderValue.startsWith("Bearer")) {
+            token = authorizationHeaderValue.substring(7);
+        }
+        return ResponseEntity.ok().body(dataExampleService.getDataById(token, id));
+    }
 }
