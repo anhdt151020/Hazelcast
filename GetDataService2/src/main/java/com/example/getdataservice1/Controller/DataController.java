@@ -1,6 +1,7 @@
 package com.example.getdataservice1.Controller;
 
 import com.example.getdataservice1.Entity.DataExample;
+import com.example.getdataservice1.Entity.DataTransferModel;
 import com.example.getdataservice1.Repository.DataExampleRepository;
 import com.example.getdataservice1.Service.DataExampleService;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,17 @@ public class DataController {
             token = authorizationHeaderValue.substring(7);
         }
         return ResponseEntity.ok().body(dataExampleService.getDataById(token, id));
+    }
+
+    @GetMapping("/get-data-transfer/{id}")
+    public ResponseEntity<DataTransferModel> getDataTransferById(HttpServletRequest request, @PathVariable Long id){
+        return ResponseEntity.ok().body(dataExampleService.getTransferData(request, id));
+    }
+
+    @PutMapping("/update-data-transfer/{id}")
+    public ResponseEntity<DataTransferModel> updateTransferDataById(
+            @RequestBody DataTransferModel dataTransferModel,
+            @PathVariable Long id){
+        return ResponseEntity.ok(dataExampleService.updateTransferData(dataTransferModel, id));
     }
 }

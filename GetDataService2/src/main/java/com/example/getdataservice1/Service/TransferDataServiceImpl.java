@@ -6,7 +6,7 @@ import com.example.getdataservice1.Repository.TransferDataRepository;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +18,9 @@ public class TransferDataServiceImpl implements TransferDataService{
     private final TransferDataRepository transferDataRepository;
 
     HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-    private final RedisTemplate<Object, Object> template;
-    Map<String, Object> dataExampleMap = hazelcastInstance.getMap("example-map");
+//    private final RedisTemplate<Object, Object> template;
+    Map<String, Object> dataExampleMap = hazelcastInstance.getMap("data-map");
+    Map<String, Object> authData = hazelcastInstance.getMap("auth-map");
 
     @Override
     public TransferModel putNewData(TransferModel transferModel) {
@@ -54,7 +55,7 @@ public class TransferDataServiceImpl implements TransferDataService{
             token = authorizationHeaderValue.substring(7);
         }
         assert token != null;
-        Object value = template.opsForValue().get(token);
+        Object value = authData.get(token);
         if (value == null){
             throw new RuntimeException("Token invalid");
         } else {
