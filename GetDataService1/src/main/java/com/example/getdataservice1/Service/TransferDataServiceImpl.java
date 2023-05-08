@@ -2,6 +2,7 @@ package com.example.getdataservice1.Service;
 
 import com.example.getdataservice1.Entity.DataExample;
 import com.example.getdataservice1.Entity.DataMakerModel;
+import com.example.getdataservice1.Entity.MakeDataEvent;
 import com.example.getdataservice1.Entity.TransferModel;
 import com.example.getdataservice1.Repository.TransferDataRepository;
 import com.hazelcast.core.Hazelcast;
@@ -9,19 +10,23 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TransferDataServiceImpl implements TransferDataService{
     private final TransferDataRepository transferDataRepository;
+    private final ApplicationEventPublisher publisher;
 
     HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-    Map<String, Object> dataExampleMap = hazelcastInstance.getMap("data-map");
+    IMap<String, Object> dataExampleMap = hazelcastInstance.getMap("data-map");
     IMap<Long, String> dataStringMap = hazelcastInstance.getMap("data-map");
     Map<String, Object> authMap = hazelcastInstance.getMap("auth-map");
 
@@ -69,7 +74,6 @@ public class TransferDataServiceImpl implements TransferDataService{
     }
 
     @Override
-    @EventP
     public void makeData(HttpServletRequest request, DataMakerModel dataMakerModel) {
         log.info("make data with model {}", dataMakerModel);
 
@@ -91,7 +95,11 @@ public class TransferDataServiceImpl implements TransferDataService{
                 throw new RuntimeException("Permission denied !");
             }
 
-            dataStringMap.put(dataMakerModel.getId(), dataMakerModel.toString());
+            String key = "data_" + dataMakerModel.getId().toString()+ "_" + dataMakerModel.getUsername();
+
+            dataExampleMap.put(key, dataMakerModel, 180, TimeUnit.SECONDS);
+            publisher.publishEvent(new MakeDataEvent(this, dataMakerModel));
+
         }
     }
 }
