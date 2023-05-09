@@ -38,7 +38,7 @@ public class EventListenerConfig {
         eventMap.put(eventKey, makeDataEvent.getDataMakerModel().getStatus(), 200, TimeUnit.SECONDS);
         log.info("push event status data to hazelcast with key: {} - status: {}", eventKey, makeDataEvent.getDataMakerModel().getStatus());
 
-        Thread.sleep(180000);
+        Thread.sleep(120000);
 
         String status = eventMap.get(eventKey);
         log.info("status: {}", status);
