@@ -8,8 +8,13 @@ import com.example.getdataservice1.Repository.TransferDataRepository;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.impl.AMQImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -24,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class TransferDataServiceImpl implements TransferDataService{
     private final TransferDataRepository transferDataRepository;
     private final ApplicationEventPublisher publisher;
-
+    private final RabbitTemplate rabbitTemplate;
     HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
     IMap<String, Object> dataExampleMap = hazelcastInstance.getMap("data-map");
     IMap<Long, String> dataStringMap = hazelcastInstance.getMap("data-map");
@@ -95,11 +100,12 @@ public class TransferDataServiceImpl implements TransferDataService{
                 throw new RuntimeException("Permission denied !");
             }
 
-            String key = "data_" + dataMakerModel.getId().toString()+ "_" + dataMakerModel.getUsername();
+            String key = "data_" + dataMakerModel.getUsername();
 
-            dataExampleMap.put(key, dataMakerModel, 180, TimeUnit.SECONDS);
+            log.info("push data with key: {}", key);
+
+            dataExampleMap.put(key, dataMakerModel, 300, TimeUnit.SECONDS);
             publisher.publishEvent(new MakeDataEvent(this, dataMakerModel));
-
         }
     }
 }

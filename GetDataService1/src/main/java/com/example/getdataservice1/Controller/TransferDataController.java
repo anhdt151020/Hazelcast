@@ -36,11 +36,12 @@ public class TransferDataController {
         return transferDataService.getData(key);
     }
 
-    @PostMapping("transfer-save/{key}")
+    @PostMapping("/transfer-save/{key}")
     public TransferModel save(@PathVariable String key) {
         return transferDataService.saveKey(key);
     }
 
+    @PostMapping("/make-data")
     public void makeData(HttpServletRequest request, @RequestBody DataMakerModel dataMakerModel){
         transferDataService.makeData(request, dataMakerModel);
     }

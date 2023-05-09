@@ -7,19 +7,20 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataMakerModel {
+public class DataMakerModel implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
 
     private String username;
 
-    private String Data;
+    private String data;
 
     private String status;
 }
