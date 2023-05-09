@@ -105,7 +105,7 @@ public class TransferDataServiceImpl implements TransferDataService{
             log.info("push data with key: {}", key);
 
             dataExampleMap.put(key, dataMakerModel, 300, TimeUnit.SECONDS);
-            publisher.publishEvent(new MakeDataEvent(this, dataMakerModel));
+//            publisher.publishEvent(new MakeDataEvent(this, dataMakerModel));
         }
     }
 }

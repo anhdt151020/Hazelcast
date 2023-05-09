@@ -17,7 +17,7 @@ public interface TransferDataService {
 
     TransferModel saveKey(String key);
 
-    DataMakerModel getMakedData(HttpServletRequest request);
+    DataMakerModel getMakedData(HttpServletRequest request, Boolean flag);
 
     DataMakerModel updateMakedData(HttpServletRequest request, DataMakerModel dataMakerModel);
 }

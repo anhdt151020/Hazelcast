@@ -93,7 +93,7 @@ public class TransferDataServiceImpl implements TransferDataService{
     }
 
     @Override
-    public DataMakerModel getMakedData(HttpServletRequest request) {
+    public DataMakerModel getMakedData(HttpServletRequest request, Boolean flag) {
         DataMakerModel res;
         String token = null;
         final String authorizationHeaderValue = request.getHeader("Authorization");
@@ -113,13 +113,17 @@ public class TransferDataServiceImpl implements TransferDataService{
             log.info("get data with key: {}", key);
 
             res = (DataMakerModel) dataExampleMap.get(key);
+            // TODO
+            if (flag) {
+                dataExampleMap.remove(key);
+            }
         }
         return res;
     }
 
     @Override
     public DataMakerModel updateMakedData(HttpServletRequest request, DataMakerModel dataMakerModel) {
-        DataMakerModel temp = getMakedData(request);
+        DataMakerModel temp = getMakedData(request, Boolean.TRUE);
         if (temp == null){
             throw new RuntimeException("invalid data!");
         }

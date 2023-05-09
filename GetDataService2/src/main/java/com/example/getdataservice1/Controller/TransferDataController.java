@@ -44,7 +44,7 @@ public class TransferDataController {
 
     @GetMapping("/make-data/get")
     public DataMakerModel getMakeData(HttpServletRequest request){
-        return transferDataService.getMakedData(request);
+        return transferDataService.getMakedData(request, Boolean.FALSE);
     }
     @PutMapping("/make-data/update")
     public DataMakerModel updateMakeData(HttpServletRequest request, @RequestBody DataMakerModel dataMakerModel) {
